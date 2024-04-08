@@ -1,0 +1,2 @@
+# Schedule to run the Python script every hour
+0 * * * * python ./python_app.py >> /logfile

@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:latest
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: postgres_database
+    container_name: postgres
+    ports:
+      - "5432:5432"
+      
+  python-app:
+    build: ./app/
+    volumes:
+      - ./app:/app
+    depends_on:
+      - postgres
+    container_name: python-app
+
+  jupyter:
+    build: ./notebook/
+    volumes:
+      - ./work:/home/jovyan/work
+    ports:
+      - 8888:8888
+    depends_on:
+      - python-app
+    container_name: jupyter_notebook
+    command: "start-notebook.sh --NotebookApp.token="
+
+
+volumes:
+  db-data:
+
